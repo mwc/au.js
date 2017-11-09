@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>au</title>
+</head>
+
+<body>
+    expr:
+    <input class="expr" style="width: 300px;" type="text">
+    <button class="btn-fire">calc</button>
+    <h1 class="result"></h1>
+    <h2 class="msg"></h2>
+    <h3>Variables:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody class="vars"></tbody>
+    </table>
+
+    <script src="./au.js"></script>
+    <script>
+        (function (global) {
+            function qs(selector) {
+                return document.querySelector(selector);
+            }
+
+            function remove(tbody, tr, name, value) {
+                if (tbody.children.length > 1 && name.value.trim().length === 0 && value.value.trim().length === 0) {
+                    tr.remove();
+                }
+            }
+
+            function add(tb) {
+                var lc = tb.lastElementChild;
+                var name = lc.firstElementChild.firstElementChild;
+                var value = lc.lastElementChild.lastElementChild;
+
+                if (name.value.trim().length !== 0 || value.value.trim().length !== 0) {
+                    generateVar(tb);
+                }
+            }
+
+            function generateVar(tbody) {
+                var tb = document.createElement('tbody');
+                var tr;
+                var name;
+                var value;
+
+                tb.innerHTML = '<tr> \
+                                    <td><input type="text" class="var-name"></td> \
+                                    <td><input type="text" class="var-value"></td> \
+                                </tr>';
+
+                tr = tb.children[0];
+                tbody.appendChild(tr);
+
+                name = tr.querySelector('.var-name');
+                value = tr.querySelector('.var-value');
+
+                name.addEventListener('keyup', function (e) {
+                    remove(tbody, tr, name, value);
+                    add(tbody);
+                });
+
+                value.addEventListener('keyup', function (e) {
+                    remove(tbody, tr, name, value);
+                    add(tbody);
+                });
+            }
+
+            function createVarsObject(tb) {
+                var obj = {};
+
+                Array.prototype.slice.call(tb.children).forEach(function (tr) {
+                    var name = tr.firstElementChild.firstElementChild.value.trim();
+                    var value = tr.lastElementChild.lastElementChild.value.trim();
+
+                    if (name.length > 0 && value.length > 0) {
+                        obj[name] = value;
+                    }
+                });
+
+                return obj;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var expr = qs('.expr');
+                var result = qs('.result');
+                var fire = qs('.btn-fire');
+                var msg = qs('.msg');
+                var tb = qs('.vars');
+
+                function figure() {
+                    var input = expr.value;
+
+                    msg.textContent = '';
+                    result.textContent = '';
+
+                    if (typeof input === 'string') {
+                        try {
+                            result.textContent = '= ' + au(input, createVarsObject(tb));
+                        }
+                        catch (m) {
+                            msg.textContent = m;
+                        }
+                    }
+                }
+
+                expr.addEventListener('keydown', function (e) {
+                    e.keyCode === 13 ? figure() : null;
+                });
+
+                fire.addEventListener('click', figure);
+
+                generateVar(tb);
+            });
+        })(this);
+    </script>
+</body>
+
+</html>
