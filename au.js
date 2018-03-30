@@ -3,7 +3,7 @@
  * au.js - Calculate the mathematical expression.
  * https://github.com/mwc/au.js
  *
- * MaoWenchao (maowc@foxmail.com)
+ * MaoWenchao (mwc@foxmail.com)
  * Licensed under the MIT License.
  *
  * Version 0.0.4 beta - 5/2017
